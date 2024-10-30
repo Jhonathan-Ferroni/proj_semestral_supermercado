@@ -25,7 +25,7 @@ void menu()
     fgets(registro.nome, sizeof(registro.nome), stdin);
 
     // Remove o '\n' de fgets, se existir
-    registro.nome[strcspn(registro.nome, "\n")] 
+    registro.nome[strcspn(registro.nome, "\n")];
 
     printf("\n PRONTUARIO DO USUARIO :\n");
     scanf("%s", registro.pront);
