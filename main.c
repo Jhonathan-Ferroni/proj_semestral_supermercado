@@ -1,3 +1,4 @@
+
 // • Objetivo: Gerar a aplicação em Linguagem C para gerenciar estruturas de dados no contexto de um supermercado.
 
 /*
@@ -10,6 +11,8 @@
 #include <stdio.h>
 #include <conio.h>
 #include <string.h>
+#include <stdlib.h>
+
 
 typedef struct
 {
@@ -19,15 +22,18 @@ typedef struct
 
 reg registro;
 
+int comparalogin(char nome[50], char pront[10]);
+
 void menu()
 {
-    printf("\n NOME DO USUARIO \t: \n");
+    printf("\n NOME DO USUARIO : ");
     fgets(registro.nome, sizeof(registro.nome), stdin);
 
-    // Remove o '\n' de fgets, se existir
-    registro.nome[strcspn(registro.nome, "\n")];
+    // Remover o '\n' capturado por fgets
+    registro.nome[strcspn(registro.nome, "\n")] = '\0';
 
-    printf("\n PRONTUARIO DO USUARIO :\n");
+
+    printf("\n PRONTUARIO DO USUARIO : ");
     scanf("%s", registro.pront);
 
    // Limpar o buffer de entrada após scanf= '\0';
