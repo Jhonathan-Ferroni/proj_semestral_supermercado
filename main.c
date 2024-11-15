@@ -11,6 +11,7 @@
 
 /* 31/10/2024, O login funciona perfeitamente, preciso implementar um metodo de ordenação no arquivo .dat*/
 /* 01/11/2024, Acabo de incluir a ordenação do arquivo .dat.*/
+/* 14/11/2024 função criadat funcionando*/
 
 #include <stdio.h>
 #include <conio.h>
@@ -21,11 +22,12 @@
 typedef struct
 {
     char nome[50];
-    char pront[10];
+    char pront[14];
 }reg;
 
 reg registro;
 
+void criadat();
 int comparalogin(char nome[50], char pront[10]);
 void bubblesort(reg *registros, int n);
 int carregavetor(const char *Arq, reg**registros);
@@ -208,9 +210,29 @@ void salvadat(const char *Arq, reg *registros, int n)
     fclose(file);
 }
 
+void criadat()
+{
+	FILE *Arq; 
+	Arq = fopen( "USUARIOS.DAT", "w");
+	if ( Arq == NULL )
+    {
+    	printf ("\nErro ao abrir USUARIOS.DAT");
+    	getch();
+    	exit(1);
+	}
+	reg usuariospadrao[30] = { {"Domingos Lucas Latorre de Oliveira", ", SP146456;"}, {"Leandro Pinto Santana", ", SP220383;"}, {"Rodrigo Ribeiro de Oliveira", ", SP134168;"}, {"Andre Luiz da Silva", ", SP030028;"}, {"Claudia Miyuki Werhmuller", ", SP030041;"}, {"Claudete de Oliveira Alves", ", SP03020X;"}, {"Francisco Verissimo Luciano", ", SP030247;"}, {"Luk Cho Man", ", SP060380;"}, {"Ivan Francolin Martinez", ", SP060835;"}, {"Joao Vianei Tamanini", ", SP060914;"}, {"Jose Oscar Machado Alexandre", ", SP070038;"}, {"Jose Braz de Araujo", ", SP070385;"}, {"Paulo Roberto de Abreu", ", SP070816;"}, {"Eurides Balbino da Silva", ", SP07102X;"}, {"Domingos Bernardo Gomes Santos", ", SP090888;"}, {"Andre Evandro Lourenco", ", SP100092;"}, {"Miguel Angelo Tancredi Molina", ", SP102763;"}, {"Antonio Airton Palladino", ", SP112197;"}, {"Luis Fernando Aires Branco Menegueti", ", SP145385;"}, {"Antonio Ferreira Viana", ", SP200827;"}, {"Leonardo Bertholdo", ", SP204973;"}, {"Marcelo Tavares de Santana", ", SP20500X;"}, {"Wagner de Paula Gomes", ", SP215016;"}, {"Daniel Marques Gomes de Morais", ", SP220097;"}, {"Alexandre Beletti Ferreira", ", SP226117;"}, {"Vladimir Camelo Pinto", ", SP240291;"}, {"Leonardo Andrade Motta de Lima", ", SP24031X;"}, {"Aldo Marcelo Paim", ", SP240497;"}, {"Cesar Lopes Fernandes", ", SP890534;"}, {"Josceli Maria Tenorio", ", SZ124382;"} };
+	int i;
+	for(i=0;i<30;i++)
+	{
+		fprintf(Arq , "%s%s\n", usuariospadrao[i].nome , usuariospadrao[i].pront);
+	}
+	fclose(Arq);
+	printf("USUARIOS.DAT criado com sucesso\n");
+}
 
 int main()
 {
+	criadat();
     reg *registros;
     const char *Arq = "USUARIOS.DAT";
     //n = numero de registros
