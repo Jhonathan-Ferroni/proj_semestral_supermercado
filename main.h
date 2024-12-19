@@ -9,5 +9,6 @@ void bubblesort(reg *registros, int n);
 int carregavetor(const char *Arq, reg**registros);
 void salvadat(const char *Arq, reg *registros, int n);
 void menu();
+void exibirRegistros(reg *registros, int n);
 
 #endif
