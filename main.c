@@ -32,6 +32,7 @@ int comparalogin(char nome[50], char pront[10]);
 void bubblesort(reg *registros, int n);
 int carregavetor(const char *Arq, reg**registros);
 void salvadat(const char *Arq, reg *registros, int n);
+void exibirRegistros(reg *registros, int n);
 
 void menu()
 {
@@ -65,6 +66,14 @@ void menu()
     }        
 
 }
+
+void exibirRegistros(reg *registros, int n) {
+    printf("\nLista de registros:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Nome: %s, Prontuário: %s\n", registros[i].nome, registros[i].pront);
+    }
+}
+
 
 int comparalogin(char usuario[50], char pront[10])
 {
@@ -240,6 +249,7 @@ int main()
     if (n < 0) {
         return 1;
     }
+    exibirRegistros(reg *registros, int n);
     bubblesort(registros, n);
     salvadat(Arq, registros, n);
 
