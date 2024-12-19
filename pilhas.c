@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAXTAM 5
 #define NUM_GONDOLAS 10
@@ -15,7 +16,7 @@ typedef struct
 	int preco;
 }REGISTRO;
 
-typedef struct
+typedef struct 
 {
 	REGISTRO elementos[MAXTAM];
 	int topo;
@@ -37,10 +38,47 @@ typedef struct
 }CARRINHO;
 
 
+int vertamanho (PILHA * p);
+void exibirPilha(PILHA * p);
+bool estaVazia(PILHA* p);
+bool estaCheia(PILHA* p);
+bool inserirElemPilha(PILHA* p, REGISTRO reg);
+bool excluirElemPilha(PILHA* p, REGISTRO* reg);
+void reinicializarPilha(PILHA* p);
+
+
+
+
+
+
+// Funções de inicialização
+void inicializarGondolas(PILHA gondolas[]);
+void inicializarPilha(PILHA* p);
+
+// Funções utilitárias
+void exibirGondolas(PILHA gondolas[], int numGondolas);
+void exibirCarrinho(CARRINHO* carrinho);
+void menu(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usuario);
+
+// Funções principais
+int pilha(char usuario) {
+    PILHA gondolas[NUM_GONDOLAS];
+    CARRINHO carrinho;
+    carrinho.topo = NULL;
+
+    inicializarGondolas(gondolas);
+
+    printf("Menu de opções\n");
+    menu(gondolas, NUM_GONDOLAS, &carrinho, usuario);
+
+    return 0;
+}
+
 /*----------------------------*/
 
-void inicializarGondolas()
+void inicializarGondolas(PILHA gondolas[])
 {
+    int i;
     for(i = 0; i< NUM_GONDOLAS; i++)
     {
         inicializarPilha(&gondolas[i]);
@@ -52,32 +90,106 @@ void inicializarPilha(PILHA *p)
     p->topo = -1;
 }
 
+void menu(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usuario) {
+    int opcao;
+    if (usuario == "u")
+        do {
+            printf("\nEscolha uma opção:\n");
+            printf("1. Visualizar gôndolas\n");
+            printf("2. Visualizar carrinho\n");
+            printf("3. Caixa\n");
+            printf("0. Sair\n");
+            printf("Escolha uma opção: ");
+            scanf("%d", &opcao);
+    
+            switch (opcao) {
+                case 1:
+                    exibirGondolas(gondolas, numGondolas);
+                    break;
+                case 2:
+                    exibirCarrinho(carrinho);
+                    break;
+                case 3:
+                    ////////FUNCAO CAIXA((((((((((((()))))))))))))
+                    break;
+                case 0:
+                    printf("\nSaindo\n");
+                    break;
+                default:
+                    printf("\nOpção inválida. Tente novamente.\n");
+            }
+        } while (opcao != 0);
+    if (usuario == "r")
+        do {
+            printf("\nEscolha uma opção:\n");
+            printf("1. Abastecer gôndolas\n");
+            printf("2. Gerenciar usuários\n");
+            printf("0. Sair\n");
+            printf("Opção: ");
+            scanf("%d", &opcao);
+    
+            switch (opcao) {
+                case 1:
+                    exibirGondolas(gondolas, numGondolas);
+                    break;
+                case 2:
+                    int carregavetor(const char *Arq, reg**registros);
+		    void exibirRegistros(reg *registros, int n);
+                    break;
+                case 0:
+                    printf("\nSaindo\n");
+                    break;
+                default:
+                    printf("\nOpção inválida. Tente novamente.\n");
+            }
+        } while (opcao != 0);
+}
+
+void exibirGondolas(PILHA gondolas[], int numGondolas) {
+    printf("\nProdutos nas gôndolas:\n");
+    for (int i = 0; i < numGondolas; i++) {
+        printf("\nGôndola %d:\n", i + 1);
+        for (int j = 0; j <= gondolas[i].topo; j++) {
+            REGISTRO produto = gondolas[i].elementos[j];
+            printf("Produto: %s | Preço: %d | Vencimento: %s | Validade: %s\n",
+                   produto.NOMEPROD, produto.preco, produto.DATAVENC, produto.DATAVAL);
+        }
+    }
+}
+
+void exibirCarrinho(CARRINHO* carrinho) {
+    printf("\nItens no carrinho:\n");
+    PONT atual = carrinho->topo;
+    while (atual != NULL) {
+        printf("Produto: %s | Preço: %d | Vencimento: %s | Validade: %s\n",
+               atual->reg.NOMEPROD, atual->reg.preco, atual->reg.DATAVENC, atual->reg.DATAVAL);
+        atual = atual->PROX;
+    }
+    if (carrinho->topo == NULL) {
+        printf("O carrinho está vazio.\n");
+    }
+}
+
+
 /*----------------------------*/
 
-int vertamanho (PILHA * p)
-{
-	PONT end = p->topo;
-	int tam = 0;
-	while (end != NULL)
-	{
-		tam++;
-		end = end->PROX;
-	}
-	return tam;
+int vertamanho(PILHA *p) {
+    return p->topo + 1; // O topo indica o índice do último elemento. +1 dá o número de elementos.
 }
 
-void exibirPilha(PILHA * p)
-{
-	PONT end = p->topo;
-	system("cls");
-	printf("Pilha :  \" ");
-	while(end != NULL)
-	{
-		printf("%s - %i - %s - %s", end->NOMEPROD, end->preco, end->DATAVENC, end->DATAVAL);
-		end = end->PROX;
-	}
-	printf("\"\n");
+void exibirPilha(PILHA *p) {
+    if (p->topo == -1) {
+        printf("A pilha está vazia.\n");
+        return;
+    }
+    printf("Itens na pilha:\n");
+    for (int i = p->topo; i >= 0; i--) {
+        printf("Nome: %s, Preço: %d, Data de Vencimento: %s, Data de Validade: %s\n",
+               p->elementos[i].NOMEPROD, p->elementos[i].preco,
+               p->elementos[i].DATAVENC, p->elementos[i].DATAVAL);
+    }
 }
+
 
 bool estaVazia(PILHA* p) 
 {
