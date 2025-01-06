@@ -2,54 +2,16 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include "main.h"
+#include "pilhas.h"
 
-#define MAXTAM 5
-#define NUM_GONDOLAS 10
-
-/*struct das gondolas*/
-
-typedef struct
-{
-	char NOMEPROD[100+1];
-	char DATAVENC[10+1];
-	char DATAVAL[10+1];
-	int preco;
-}REGISTRO;
-
-typedef struct 
-{
-	REGISTRO elementos[MAXTAM];
-	int topo;
-}PILHA;
-
-/*struct do carrinho*/
-
-typedef struct aux
-{
-	REGISTRO reg;
-	struct aux * PROX;
-}ELEMENTO;
-
-typedef ELEMENTO *PONT;
-
-typedef struct
-{
-	PONT topo;
-}CARRINHO;
-
-
-int vertamanho (PILHA * p);
-void exibirPilha(PILHA * p);
+int vertamanho(PILHA* p);
+void exibirPilha(PILHA* p);
 bool estaVazia(PILHA* p);
 bool estaCheia(PILHA* p);
 bool inserirElemPilha(PILHA* p, REGISTRO reg);
 bool excluirElemPilha(PILHA* p, REGISTRO* reg);
 void reinicializarPilha(PILHA* p);
-
-
-
-
-
 
 // Funções de inicialização
 void inicializarGondolas(PILHA gondolas[]);
@@ -58,7 +20,7 @@ void inicializarPilha(PILHA* p);
 // Funções utilitárias
 void exibirGondolas(PILHA gondolas[], int numGondolas);
 void exibirCarrinho(CARRINHO* carrinho);
-void menu(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usuario);
+void menupilhas(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usuario); // Alterado de menuprincipal() para menupilhas()
 
 // Funções principais
 int pilha(char usuario) {
@@ -69,7 +31,7 @@ int pilha(char usuario) {
     inicializarGondolas(gondolas);
 
     printf("Menu de opções\n");
-    menu(gondolas, NUM_GONDOLAS, &carrinho, usuario);
+    menupilhas(gondolas, NUM_GONDOLAS, &carrinho, usuario); // Alterado de menuprincipal() para menupilhas()
 
     return 0;
 }
@@ -79,20 +41,20 @@ int pilha(char usuario) {
 void inicializarGondolas(PILHA gondolas[])
 {
     int i;
-    for(i = 0; i< NUM_GONDOLAS; i++)
+    for (i = 0; i < NUM_GONDOLAS; i++)
     {
         inicializarPilha(&gondolas[i]);
     }
 }
 
-void inicializarPilha(PILHA *p)
+void inicializarPilha(PILHA* p)
 {
     p->topo = -1;
 }
 
-void menu(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usuario) {
+void menupilhas(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usuario) { // Alterado de menuprincipal() para menupilhas()
     int opcao;
-    if (usuario == "u")
+    if (usuario == 'u')
         do {
             printf("\nEscolha uma opção:\n");
             printf("1. Visualizar gôndolas\n");
@@ -101,25 +63,25 @@ void menu(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usuario) {
             printf("0. Sair\n");
             printf("Escolha uma opção: ");
             scanf("%d", &opcao);
-    
+
             switch (opcao) {
-                case 1:
-                    exibirGondolas(gondolas, numGondolas);
-                    break;
-                case 2:
-                    exibirCarrinho(carrinho);
-                    break;
-                case 3:
-                    ////////FUNCAO CAIXA((((((((((((()))))))))))))
-                    break;
-                case 0:
-                    printf("\nSaindo\n");
-                    break;
-                default:
-                    printf("\nOpção inválida. Tente novamente.\n");
+            case 1:
+                exibirGondolas(gondolas, numGondolas);
+                break;
+            case 2:
+                exibirCarrinho(carrinho);
+                break;
+            case 3:
+                ////////FUNCAO CAIXA((((((((((((())))))))))))) 
+                break;
+            case 0:
+                printf("\nSaindo\n");
+                break;
+            default:
+                printf("\nOpção inválida. Tente novamente.\n");
             }
         } while (opcao != 0);
-    if (usuario == "r")
+    if (usuario == 'r')
         do {
             printf("\nEscolha uma opção:\n");
             printf("1. Abastecer gôndolas\n");
@@ -127,20 +89,28 @@ void menu(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usuario) {
             printf("0. Sair\n");
             printf("Opção: ");
             scanf("%d", &opcao);
-    
+
             switch (opcao) {
-                case 1:
-                    exibirGondolas(gondolas, numGondolas);
-                    break;
-                case 2:
-                    int carregavetor(const char *Arq, reg**registros);
-		    void exibirRegistros(reg *registros, int n);
-                    break;
-                case 0:
-                    printf("\nSaindo\n");
-                    break;
-                default:
-                    printf("\nOpção inválida. Tente novamente.\n");
+            case 1:
+                exibirGondolas(gondolas, numGondolas);
+                break;
+            case 2: {
+                reg* registros;
+                int n = carregavetor("USUARIOS.DAT", &registros);
+                if (n > 0) {
+                    exibirRegistros(registros, n);
+                    free(registros);
+                }
+                else {
+                    printf("Erro ao carregar registros.\n");
+                }
+                break;
+            }
+            case 0:
+                printf("\nSaindo\n");
+                break;
+            default:
+                printf("\nOpção inválida. Tente novamente.\n");
             }
         } while (opcao != 0);
 }
@@ -152,7 +122,7 @@ void exibirGondolas(PILHA gondolas[], int numGondolas) {
         for (int j = 0; j <= gondolas[i].topo; j++) {
             REGISTRO produto = gondolas[i].elementos[j];
             printf("Produto: %s | Preço: %d | Vencimento: %s | Validade: %s\n",
-                   produto.NOMEPROD, produto.preco, produto.DATAVENC, produto.DATAVAL);
+                produto.NOMEPROD, produto.preco, produto.DATAVENC, produto.DATAVAL);
         }
     }
 }
@@ -162,7 +132,7 @@ void exibirCarrinho(CARRINHO* carrinho) {
     PONT atual = carrinho->topo;
     while (atual != NULL) {
         printf("Produto: %s | Preço: %d | Vencimento: %s | Validade: %s\n",
-               atual->reg.NOMEPROD, atual->reg.preco, atual->reg.DATAVENC, atual->reg.DATAVAL);
+            atual->reg.NOMEPROD, atual->reg.preco, atual->reg.DATAVENC, atual->reg.DATAVAL);
         atual = atual->PROX;
     }
     if (carrinho->topo == NULL) {
@@ -170,14 +140,13 @@ void exibirCarrinho(CARRINHO* carrinho) {
     }
 }
 
-
 /*----------------------------*/
 
-int vertamanho(PILHA *p) {
+int vertamanho(PILHA* p) {
     return p->topo + 1; // O topo indica o índice do último elemento. +1 dá o número de elementos.
 }
 
-void exibirPilha(PILHA *p) {
+void exibirPilha(PILHA* p) {
     if (p->topo == -1) {
         printf("A pilha está vazia.\n");
         return;
@@ -185,17 +154,16 @@ void exibirPilha(PILHA *p) {
     printf("Itens na pilha:\n");
     for (int i = p->topo; i >= 0; i--) {
         printf("Nome: %s, Preço: %d, Data de Vencimento: %s, Data de Validade: %s\n",
-               p->elementos[i].NOMEPROD, p->elementos[i].preco,
-               p->elementos[i].DATAVENC, p->elementos[i].DATAVAL);
+            p->elementos[i].NOMEPROD, p->elementos[i].preco,
+            p->elementos[i].DATAVENC, p->elementos[i].DATAVAL);
     }
 }
 
-
-bool estaVazia(PILHA* p) 
+bool estaVazia(PILHA* p)
 {
-   if (p->topo == NULL) 
-      return true;  
-   return false;
+    if (p->topo == -1)
+        return true;
+    return false;
 }
 
 bool estaCheia(PILHA* p) {
@@ -207,13 +175,15 @@ bool estaCheia(PILHA* p) {
 
 bool inserirElemPilha(PILHA* p, REGISTRO reg)
 {
+    if (p->topo == MAXTAM - 1)  // Verifica se a pilha está cheia
+        return false;
     // Insere o item no topo da pilha
     p->topo++;
     p->elementos[p->topo] = reg;  // Atribui o registro à posição indicada por topo
     return true;
 }
 
-bool excluirElemPilha(PILHA* p, REGISTRO* reg) 
+bool excluirElemPilha(PILHA* p, REGISTRO* reg)
 {
     if (p->topo == -1)  // Verifica se a pilha está vazia
         return false;
@@ -224,7 +194,7 @@ bool excluirElemPilha(PILHA* p, REGISTRO* reg)
     return true;
 }
 
-void reinicializarPilha(PILHA* p) 
+void reinicializarPilha(PILHA* p)
 {
     p->topo = -1;  // Reseta o topo para -1, indicando que a pilha está vazia
-}
+}                                               
