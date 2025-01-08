@@ -12,6 +12,9 @@ bool estaCheia(PILHA* p);
 bool inserirElemPilha(PILHA* p, REGISTRO reg);
 bool excluirElemPilha(PILHA* p, REGISTRO* reg);
 void reinicializarPilha(PILHA* p);
+void adicionarproduto();
+void salvarPilhaEmArquivo(PILHA* p, const char* nomeArquivo);
+bool carregarPilhaDeArquivo(PILHA* p, const char* nomeArquivo);
 
 // Funções de inicialização
 void inicializarGondolas(PILHA gondolas[]);
@@ -38,12 +41,13 @@ int pilha(char usuario) {
 
 /*----------------------------*/
 
-void inicializarGondolas(PILHA gondolas[])
-{
-    int i;
-    for (i = 0; i < NUM_GONDOLAS; i++)
-    {
-        inicializarPilha(&gondolas[i]);
+void inicializarGondolas(PILHA gondolas[]) {
+    char nomeArquivo[20];
+    for (int i = 0; i < NUM_GONDOLAS; i++) {
+        sprintf(nomeArquivo, "gondola%d.dat", i + 1);
+        if (!carregarPilhaDeArquivo(&gondolas[i], nomeArquivo)) {
+            inicializarPilha(&gondolas[i]);
+        }
     }
 }
 
@@ -93,6 +97,7 @@ void menupilhas(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usua
             switch (opcao) {
             case 1:
                 exibirGondolas(gondolas, numGondolas);
+                adicionarproduto();
                 break;
             case 2: {
                 reg* registros;
@@ -115,14 +120,49 @@ void menupilhas(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usua
         } while (opcao != 0);
 }
 
+void adicionarproduto(PILHA gondolas[]) {
+	printf("Escolha a gôndola para abastecer: ");
+	int gondola;
+	scanf("%d", &gondola);
+	if (gondola < 1 || gondola > NUM_GONDOLAS) {
+		printf("Gôndola inválida.\n");
+		return;
+	}
+	gondola--; // Ajusta o índice para o vetor
+	if (estaCheia(&gondolas[gondola])) {
+		printf("A gôndola está cheia.\n");
+		return;
+	}
+	REGISTRO produto;
+    fflush(stdin);
+	printf("Nome do produto: ");
+	scanf("%s", produto.NOMEPROD);
+    fflush(stdin);
+	printf("Descrição do produto: ");
+	scanf("%s", produto.desc);
+    fflush(stdin);
+	printf("Peso do produto: ");
+	scanf("%d", &produto.peso);
+    fflush(stdin);
+	printf("Preço do produto: ");
+	scanf("%d", &produto.preco);
+	inserirElemPilha(&gondolas[gondola], produto);
+	printf("Produto adicionado à gôndola %d.\n", gondola + 1);
+	char nomeArquivo[20];
+	sprintf(nomeArquivo, "gondola%d.dat", gondola + 1);
+    salvarPilhaEmArquivo(&gondolas[gondola], nomeArquivo);
+	getchar();
+}
+
 void exibirGondolas(PILHA gondolas[], int numGondolas) {
-    printf("\nProdutos nas gôndolas:\n");
+    system("cls");
+    printf("\nProdutos nas gondolas:\n");
     for (int i = 0; i < numGondolas; i++) {
-        printf("\nGôndola %d:\n", i + 1);
+        printf("\nGondola %d:\n", i + 1);
         for (int j = 0; j <= gondolas[i].topo; j++) {
             REGISTRO produto = gondolas[i].elementos[j];
-            printf("Produto: %s | Preço: %d | Vencimento: %s | Validade: %s\n",
-                produto.NOMEPROD, produto.preco, produto.DATAVENC, produto.DATAVAL);
+            printf("Produto: %s | Preço: %d | Peso: %d | Descricao: %s\n",
+                produto.NOMEPROD, produto.preco, produto.peso, produto.desc);
         }
     }
 }
@@ -131,8 +171,8 @@ void exibirCarrinho(CARRINHO* carrinho) {
     printf("\nItens no carrinho:\n");
     PONT atual = carrinho->topo;
     while (atual != NULL) {
-        printf("Produto: %s | Preço: %d | Vencimento: %s | Validade: %s\n",
-            atual->reg.NOMEPROD, atual->reg.preco, atual->reg.DATAVENC, atual->reg.DATAVAL);
+        printf("Produto: %s | Preço: %d | Peso: %d | Descricao: %s\n",
+            atual->reg.NOMEPROD, atual->reg.preco, atual->reg.peso, atual->reg.desc);
         atual = atual->PROX;
     }
     if (carrinho->topo == NULL) {
@@ -153,9 +193,9 @@ void exibirPilha(PILHA* p) {
     }
     printf("Itens na pilha:\n");
     for (int i = p->topo; i >= 0; i--) {
-        printf("Nome: %s, Preço: %d, Data de Vencimento: %s, Data de Validade: %s\n",
+        printf("Nome: %s, Preço: %d, Peso: %d, Descricao: %s\n",
             p->elementos[i].NOMEPROD, p->elementos[i].preco,
-            p->elementos[i].DATAVENC, p->elementos[i].DATAVAL);
+            p->elementos[i].peso, p->elementos[i].desc);
     }
 }
 
@@ -197,4 +237,49 @@ bool excluirElemPilha(PILHA* p, REGISTRO* reg)
 void reinicializarPilha(PILHA* p)
 {
     p->topo = -1;  // Reseta o topo para -1, indicando que a pilha está vazia
-}                                               
+}                               
+
+void salvarPilhaEmArquivo(PILHA* p, const char* nomeArquivo) {
+    FILE* arquivo = fopen(nomeArquivo, "wb");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo para escrita.\n");
+        return;
+    }
+
+    // Escreve o número de elementos na pilha
+    int tamanho = vertamanho(p);
+    fwrite(&tamanho, sizeof(int), 1, arquivo);
+
+    // Escreve os elementos da pilha no arquivo
+    for (int i = 0; i <= p->topo; i++) {
+        fwrite(&p->elementos[i], sizeof(REGISTRO), 1, arquivo);
+    }
+
+    fclose(arquivo);
+}
+
+bool carregarPilhaDeArquivo(PILHA* p, const char* nomeArquivo) {
+    FILE* arquivo = fopen(nomeArquivo, "rb");
+    if (arquivo == NULL) {
+        // Arquivo não existe ou não pode ser aberto
+        return false;
+    }
+    // Lê o número de elementos na pilha
+    int tamanho;
+    if (fread(&tamanho, sizeof(int), 1, arquivo) != 1) {
+        fclose(arquivo);
+        return false;
+    }
+
+    // Lê os elementos da pilha do arquivo
+    for (int i = 0; i < tamanho; i++) {
+        if (fread(&p->elementos[i], sizeof(REGISTRO), 1, arquivo) != 1) {
+            fclose(arquivo);
+            return false;
+        }
+    }
+    p->topo = tamanho - 1;
+
+    fclose(arquivo);
+    return true;
+}
