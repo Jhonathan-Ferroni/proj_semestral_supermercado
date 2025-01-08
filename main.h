@@ -20,5 +20,8 @@ int carregavetor(const char* Arq, reg** registros);
 void salvadat(const char* Arq, reg* registros, int n);
 void menuprincipal(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usuario); // Alterado para corresponder à definição no pilhas.h
 void exibirRegistros(reg* registros, int n);
+int adicionarusuario();
+int excluirusuarios();
+
 
 #endif
