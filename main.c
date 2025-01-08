@@ -13,6 +13,8 @@ void bubblesort(reg* registros, int n);
 int carregavetor(const char* Arq, reg** registros);
 void salvadat(const char* Arq, reg* registros, int n);
 void exibirRegistros(reg* registros, int n);
+int adicionarusuario();
+int excluirusuarios();
 
 void menuprincipal(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usuario)
 {
@@ -200,53 +202,55 @@ void salvadat(const char* Arq, reg* registros, int n)
 void criadat()
 {
     FILE* Arq;
-    Arq = fopen("USUARIOS.DAT", "w");
+    Arq = fopen("USUARIOS.DAT", "a+");
     if (Arq == NULL)
     {
         printf("\nErro ao abrir USUARIOS.DAT");
         getch();
         exit(1);
     }
-    reg usuariospadrao[30] = {
-    {"Domingos Lucas Latorre de Oliveira", "SP146456", "r"},
-    {"Leandro Pinto Santana", "SP220383", "r"},
-    {"Rodrigo Ribeiro de Oliveira", "SP134168", "r"},
-    {"Andre Luiz da Silva", "SP030028", "r"},
-    {"Claudia Miyuki Werhmuller", "SP030041", "r"},
-    {"Claudete de Oliveira Alves", "SP03020X", "r"},
-    {"Francisco Verissimo Luciano", "SP030247", "r"},
-    {"Luk Cho Man", "SP060380", "r"},
-    {"Ivan Francolin Martinez", "SP060835", "r"},
-    {"Joao Vianei Tamanini", "SP060914", "r"},
-    {"Jose Oscar Machado Alexandre", "SP070038", "r"},
-    {"Jose Braz de Araujo", "SP070385", "r"},
-    {"Paulo Roberto de Abreu", "SP070816", "r"},
-    {"Eurides Balbino da Silva", "SP07102X", "r"},
-    {"Domingos Bernardo Gomes Santos", "SP090888", "r"},
-    {"Andre Evandro Lourenco", "SP100092", "r"},
-    {"Miguel Angelo Tancredi Molina", "SP102763", "r"},
-    {"Antonio Airton Palladino", "SP112197", "r"},
-    {"Luis Fernando Aires Branco Menegueti", "SP145385", "r"},
-    {"Antonio Ferreira Viana", "SP200827", "r"},
-    {"Leonardo Bertholdo", "SP204973", "r"},
-    {"Marcelo Tavares de Santana", "SP20500X", "r"},
-    {"Wagner de Paula Gomes", "SP215016", "r"},
-    {"Daniel Marques Gomes de Morais", "SP220097", "r"},
-    {"Alexandre Beletti Ferreira", "SP226117", "r"},
-    {"Vladimir Camelo Pinto", "SP240291", "r"},
-    {"Leonardo Andrade Motta de Lima", "SP24031X", "r"},
-    {"Aldo Marcelo Paim", "SP240497", "r"},
-    {"Cesar Lopes Fernandes", "SP890534", "r"},
-    {"Josceli Maria Tenorio", "SZ124382", "r"}
-    };
-
-    int i;
-    for (i = 0; i < 30; i++)
-    {
-        fprintf(Arq, "%s;%s;%s\n", usuariospadrao[i].nome, usuariospadrao[i].pront, usuariospadrao[i].user); // Adicionando a nova informação
+    fseek(Arq, 0, SEEK_END);
+    long tamanho = ftell(Arq);
+    if (tamanho == 0) {
+        // Se o arquivo estiver vazio, escreve os usuários padrão
+        reg usuariospadrao[30] = {
+            {"Domingos Lucas Latorre de Oliveira", "SP146456", "r"},
+            {"Leandro Pinto Santana", "SP220383", "r"},
+            {"Rodrigo Ribeiro de Oliveira", "SP134168", "r"},
+            {"Andre Luiz da Silva", "SP030028", "r"},
+            {"Claudia Miyuki Werhmuller", "SP030041", "r"},
+            {"Claudete de Oliveira Alves", "SP03020X", "r"},
+            {"Francisco Verissimo Luciano", "SP030247", "r"},
+            {"Luk Cho Man", "SP060380", "r"},
+            {"Ivan Francolin Martinez", "SP060835", "r"},
+            {"Joao Vianei Tamanini", "SP060914", "r"},
+            {"Jose Oscar Machado Alexandre", "SP070038", "r"},
+            {"Jose Braz de Araujo", "SP070385", "r"},
+            {"Paulo Roberto de Abreu", "SP070816", "r"},
+            {"Eurides Balbino da Silva", "SP07102X", "r"},
+            {"Domingos Bernardo Gomes Santos", "SP090888", "r"},
+            {"Andre Evandro Lourenco", "SP100092", "r"},
+            {"Miguel Angelo Tancredi Molina", "SP102763", "r"},
+            {"Antonio Airton Palladino", "SP112197", "r"},
+            {"Luis Fernando Aires Branco Menegueti", "SP145385", "r"},
+            {"Antonio Ferreira Viana", "SP200827", "r"},
+            {"Leonardo Bertholdo", "SP204973", "r"},
+            {"Marcelo Tavares de Santana", "SP20500X", "r"},
+            {"Wagner de Paula Gomes", "SP215016", "r"},
+            {"Daniel Marques Gomes de Morais", "SP220097", "r"},
+            {"Alexandre Beletti Ferreira", "SP226117", "r"},
+            {"Vladimir Camelo Pinto", "SP240291", "r"},
+            {"Leonardo Andrade Motta de Lima", "SP24031X", "r"},
+            {"Aldo Marcelo Paim", "SP240497", "r"},
+            {"Cesar Lopes Fernandes", "SP890534", "r"},
+            {"Josceli Maria Tenorio", "SZ124382", "r"}
+        };
+        int i;
+        for (i = 0; i < 30; i++) {
+            fprintf(Arq, "%s;%s;%s\n", usuariospadrao[i].nome, usuariospadrao[i].pront, usuariospadrao[i].user);
+        }
     }
     fclose(Arq);
-    printf("USUARIOS.DAT criado com sucesso\n");
 }
 
 int main()
@@ -271,3 +275,57 @@ int main()
     menuprincipal(gondolas, NUM_GONDOLAS, &carrinho, 'u'); // Passando os parâmetros necessários
     return 0;
 }
+
+int adicionarusuario()
+{
+    
+    reg novo;
+    fflush(stdin);
+    printf("Nome do usuário: ");
+    fgets(novo.nome, sizeof(novo.nome), stdin);
+    novo.nome[strcspn(novo.nome, "\n")] = '\0';
+    fflush(stdin);
+    printf("Prontuário: ");
+    fgets(novo.pront, sizeof(novo.pront), stdin);
+    novo.pront[strcspn(novo.pront, "\n")] = '\0';
+    fflush(stdin);
+    printf("Tipo de usuário (r/u): ");
+    scanf(" %c", &novo.user[0]);
+    novo.user[1] = '\0';
+    // Carregar registros existentes
+    reg* registros;
+    int n = carregavetor("USUARIOS.DAT", &registros);
+    if (n < 0) {
+        printf("Erro ao carregar registros existentes.\n");
+        return 1;
+    }
+    // Realocar memória para o novo registro
+    registros = (reg*)realloc(registros, (n + 1) * sizeof(reg));
+    if (registros == NULL) {
+        printf("Erro ao alocar memória para o novo registro.\n");
+        return 2;
+    }
+    // Adicionar o novo registro
+    registros[n] = novo;
+
+    // Salvar todos os registros de volta no arquivo
+    salvadat("USUARIOS.DAT", registros, n + 1);
+
+    // Liberar a memória alocada
+    free(registros);
+    bubblesort(registros, n);
+    printf("Usuário adicionado com sucesso.\n");
+}
+int excluirusuarios()
+{
+    criadat();
+    reg* registros;
+    const char* Arq = "USUARIOS.DAT";
+    int n = carregavetor(Arq, &registros);
+    if (n < 0) {
+        return 1;}
+	salvadat(Arq, registros, n);
+	printf("Sistema reiniciado!\n");
+}
+
+
