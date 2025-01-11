@@ -6,12 +6,6 @@
 #include <string.h>
 #include "pilhas.h"
 
-typedef struct
-{
-    char nome[50];
-    char pront[14];
-    char user[2];
-} reg;
 
 void criadat();
 int comparalogin(char nome[50], char pront[10]);
