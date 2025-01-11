@@ -18,6 +18,7 @@ int excluirusuarios();
 
 void menuprincipal(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usuario)
 {
+    system("color 17");
     printf("\n NOME DO USUARIO : ");
     fgets(registro.nome, sizeof(registro.nome), stdin);
 
@@ -36,14 +37,17 @@ void menuprincipal(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char u
     if (a == 0)
     {
         system("cls");
+        system("color 40");
         printf("\nACESSO NEGADO!");
         getch();
         exit(1);
     }
     else
     {
+
         system("cls");
-        printf("\nACESSO CONCEDIDO!");
+        system("color 17");
+        printf("\nACESSO CONCEDIDO!\n");
         menupilhas(gondolas, numGondolas, carrinho, registro.user[0]); // Chamada correta da função menupilhas
         getch();
     }
@@ -255,6 +259,7 @@ void criadat()
 
 int main()
 {
+    system("cls");
     criadat();
     reg* registros;
     const char* Arq = "USUARIOS.DAT";
@@ -281,15 +286,15 @@ int adicionarusuario()
     
     reg novo;
     fflush(stdin);
-    printf("Nome do usuário: ");
+    printf("Nome do usuario: ");
     fgets(novo.nome, sizeof(novo.nome), stdin);
     novo.nome[strcspn(novo.nome, "\n")] = '\0';
     fflush(stdin);
-    printf("Prontuário: ");
+    printf("Prontuario: ");
     fgets(novo.pront, sizeof(novo.pront), stdin);
     novo.pront[strcspn(novo.pront, "\n")] = '\0';
     fflush(stdin);
-    printf("Tipo de usuário (r/u): ");
+    printf("Tipo de usuario (r/u): ");
     scanf(" %c", &novo.user[0]);
     novo.user[1] = '\0';
     // Carregar registros existentes
@@ -314,8 +319,9 @@ int adicionarusuario()
     // Liberar a memória alocada
     free(registros);
     bubblesort(registros, n);
-    printf("Usuário adicionado com sucesso.\n");
+    printf("Usuario adicionado com sucesso.\n");
 }
+
 int excluirusuarios()
 {
     criadat();
