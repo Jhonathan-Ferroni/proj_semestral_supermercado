@@ -4,6 +4,7 @@
 #include <string.h>
 #include "main.h"
 #include "pilhas.h"
+#include "fila.h"
 
 int vertamanho(PILHA* p);
 void exibirPilha(PILHA* p);
@@ -12,10 +13,12 @@ bool estaCheia(PILHA* p);
 bool inserirElemPilha(PILHA* p, REGISTRO reg);
 bool excluirElemPilha(PILHA* p, REGISTRO* reg);
 void reinicializarPilha(PILHA* p);
-void adicionarproduto();
+void adicionarproduto(PILHA gondolas[]);
 void salvarPilhaEmArquivo(PILHA* p, const char* nomeArquivo);
 bool carregarPilhaDeArquivo(PILHA* p, const char* nomeArquivo);
 void exibirRegistros(reg* registros, int n);
+bool moveritemparacarrinho(PILHA* gondola, CARRINHO* carrinho);
+
 
 
 // Funções de inicialização
@@ -41,8 +44,6 @@ int pilha(char usuario) {
     return 0;
 }
 
-/*----------------------------*/
-
 void inicializarGondolas(PILHA gondolas[]) {
     char nomeArquivo[20];
     for (int i = 0; i < NUM_GONDOLAS; i++) {
@@ -62,46 +63,82 @@ void menupilhas(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usua
     int opcao;
     if (usuario == 'u')
         do {
-            printf("\nEscolha uma opção:\n");
-            printf("1. Visualizar gôndolas\n");
+            printf("\nEscolha uma opcao:\n");
+            printf("1. Visualizar gondolas\n");
             printf("2. Visualizar carrinho\n");
             printf("3. Caixa\n");
             printf("0. Sair\n");
-            printf("Escolha uma opção: ");
+            printf("Escolha uma opcao: ");
             scanf("%d", &opcao);
 
             switch (opcao) {
             case 1:
+                system("cls");
                 exibirGondolas(gondolas, numGondolas);
+				int opc;
+				printf("Deseja retirar um item de alguma gondola? (1 - Sim / 2 - Nao)\n");
+				scanf("%d", &opc);
+                if (opc == 1) {
+                    printf("Escolha uma gondola para retirar um item: ");
+                    int gondola;
+                    scanf("%d", &gondola);
+                    if (gondola < 1 || gondola > NUM_GONDOLAS) {
+                        printf("Gondola invalida.\n");
+                        getchar();
+                    }
+                    gondola--; // Ajusta o índice para o vetor
+                    if (estaVazia(&gondolas[gondola])) {
+                        printf("A gondola esta vazia.\n");
+                        getchar();
+                    }
+                    if (moveritemparacarrinho(&gondolas[gondola], carrinho)) {
+                        printf("Item movido para o carrinho.\n");
+                        getchar();
+                    }
+                }
+                system("cls");
                 break;
             case 2:
                 exibirCarrinho(carrinho);
+                getchar();
                 break;
             case 3:
-                ////////FUNCAO CAIXA((((((((((((())))))))))))) 
+                caixaEletronico(carrinho, gondolas);
                 break;
             case 0:
                 printf("\nSaindo\n");
                 break;
             default:
-                printf("\nOpção inválida. Tente novamente.\n");
+                printf("\nOpcao invalida. Tente novamente.\n");
             }
         } while (opcao != 0);
     if (usuario == 'r')
         do {
-            printf("\nEscolha uma opção:\n");
-            printf("1. Abastecer gôndolas\n");
-            printf("2. Gerenciar usuários\n");
+			int w = 0;
+            while(w < NUM_GONDOLAS ){
+				if (estaVazia(&gondolas[w])) {
+					printf("Gondola %d esta vazia.\n", w + 1);
+				}
+				if (estaCheia(&gondolas[w])) {
+					printf("Gondola %d esta cheia.\n", w + 1);
+				}
+                w++;
+                }
+            printf("\nEscolha uma opcao:\n");
+            printf("1. Abastecer gondolas\n");
+            printf("2. Gerenciar usuarios\n");
             printf("0. Sair\n");
-            printf("Opção: ");
+            printf("Opcao: ");
             scanf("%d", &opcao);
 
             switch (opcao) {
             case 1:
+                system("cls");
                 exibirGondolas(gondolas, numGondolas);
-                adicionarproduto();
+                adicionarproduto(gondolas);
                 break;
             case 2: {
+                system("cls");
                 reg* registros;
                 int n = carregavetor("USUARIOS.DAT", &registros);
                 if (n > 0) {
@@ -111,46 +148,51 @@ void menupilhas(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usua
                 else {
                     printf("Erro ao carregar registros.\n");
                 }
-				printf("(A) Adicionar usuário\n");
-				printf("(E) Excluir usuários novos\n");
+				printf("(A) Adicionar usuario\n");
+				printf("(E) Excluir usuarios novos\n");
 				printf("(V) Voltar\n");
 				char opcao2;
 				scanf(" %c", &opcao2);
 				switch (opcao2) {
 				case 'A':
+                    system("cls");
 					adicionarusuario();
 					break;
 				case 'E':
+                    system("cls");
 					excluirusuarios();
                     break;
 				case 'V':
 					break; 
 				default:
-					printf("Opção inválida.\n");
+                    system("cls");
+					printf("Opcao invalida.\n");
 					break;
 				}
                 break;
             }
             case 0:
+                system("cls");
                 printf("\nSaindo\n");
                 break;
             default:
-                printf("\nOpção inválida. Tente novamente.\n");
+                system("cls");
+                printf("\nOpcao invalida. Tente novamente.\n");
             }
         } while (opcao != 0);
 }
 
 void adicionarproduto(PILHA gondolas[]) {
-	printf("Escolha a gôndola para abastecer: ");
+	printf("Escolha a gondola para abastecer: ");
 	int gondola;
 	scanf("%d", &gondola);
 	if (gondola < 1 || gondola > NUM_GONDOLAS) {
-		printf("Gôndola inválida.\n");
+		printf("Gondola invalida.\n");
 		return;
 	}
 	gondola--; // Ajusta o índice para o vetor
 	if (estaCheia(&gondolas[gondola])) {
-		printf("A gôndola está cheia.\n");
+		printf("A gondola esta cheia.\n");
 		return;
 	}
 	REGISTRO produto;
@@ -158,16 +200,16 @@ void adicionarproduto(PILHA gondolas[]) {
 	printf("Nome do produto: ");
 	scanf("%s", produto.NOMEPROD);
     fflush(stdin);
-	printf("Descrição do produto: ");
+	printf("Descricao do produto: ");
 	scanf("%s", produto.desc);
     fflush(stdin);
 	printf("Peso do produto: ");
-	scanf("%d", &produto.peso);
+	scanf("%f", &produto.peso);
     fflush(stdin);
-	printf("Preço do produto: ");
-	scanf("%d", &produto.preco);
+	printf("Preco do produto: ");
+	scanf("%f", &produto.preco);
 	inserirElemPilha(&gondolas[gondola], produto);
-	printf("Produto adicionado à gôndola %d.\n", gondola + 1);
+	printf("Produto adicionado a gondola %d.\n", gondola + 1);
 	char nomeArquivo[20];
 	sprintf(nomeArquivo, "gondola%d.dat", gondola + 1);
     salvarPilhaEmArquivo(&gondolas[gondola], nomeArquivo);
@@ -181,8 +223,10 @@ void exibirGondolas(PILHA gondolas[], int numGondolas) {
         printf("\nGondola %d:\n", i + 1);
         for (int j = 0; j <= gondolas[i].topo; j++) {
             REGISTRO produto = gondolas[i].elementos[j];
-            printf("Produto: %s | Preço: %d | Peso: %d | Descricao: %s\n",
+            printf("Produto: %s | Preco: %.2f | Peso: %.2f | Descricao: %s\n",
                 produto.NOMEPROD, produto.preco, produto.peso, produto.desc);
+        int tamanho = vertamanho(&gondolas[i]);
+        printf("\n%i itens\n", tamanho);
         }
     }
 }
@@ -191,16 +235,16 @@ void exibirCarrinho(CARRINHO* carrinho) {
     printf("\nItens no carrinho:\n");
     PONT atual = carrinho->topo;
     while (atual != NULL) {
-        printf("Produto: %s | Preço: %d | Peso: %d | Descricao: %s\n",
+        printf("Produto: %s | Preco: %.2f | Peso: %.2f | Descricao: %s\n",
             atual->reg.NOMEPROD, atual->reg.preco, atual->reg.peso, atual->reg.desc);
         atual = atual->PROX;
     }
     if (carrinho->topo == NULL) {
         printf("O carrinho está vazio.\n");
+        getchar();
     }
+    
 }
-
-/*----------------------------*/
 
 int vertamanho(PILHA* p) {
     return p->topo + 1; // O topo indica o índice do último elemento. +1 dá o número de elementos.
@@ -208,12 +252,12 @@ int vertamanho(PILHA* p) {
 
 void exibirPilha(PILHA* p) {
     if (p->topo == -1) {
-        printf("A pilha está vazia.\n");
+        printf("A pilha esta vazia.\n");
         return;
     }
     printf("Itens na pilha:\n");
     for (int i = p->topo; i >= 0; i--) {
-        printf("Nome: %s, Preço: %d, Peso: %d, Descricao: %s\n",
+        printf("Nome: %s, Preco: %.2f, Peso: %.2f, Descricao: %s\n",
             p->elementos[i].NOMEPROD, p->elementos[i].preco,
             p->elementos[i].peso, p->elementos[i].desc);
     }
@@ -258,9 +302,7 @@ bool excluirElemPilha(PILHA* p, REGISTRO* reg)
 
     return true;
 }
-
-                        
-
+                    
 void salvarPilhaEmArquivo(PILHA* p, const char* nomeArquivo) {
     FILE* arquivo = fopen(nomeArquivo, "wb");
     if (arquivo == NULL) {
@@ -306,3 +348,26 @@ bool carregarPilhaDeArquivo(PILHA* p, const char* nomeArquivo) {
     return true;
 }
 
+bool moveritemparacarrinho(PILHA* gondola, CARRINHO* carrinho)
+{
+    if (estaVazia(gondola)) {
+        printf("A gôndola está vazia. Não há itens para mover.\n");
+        return false;
+    }
+    REGISTRO item;
+    if (!excluirElemPilha(gondola, &item)) {
+        printf("Erro ao remover item da gôndola.\n");
+        return false;
+    }
+    PONT novo = (PONT)malloc(sizeof(NODO));
+    if (novo == NULL) {
+        printf("Erro ao alocar memória para o carrinho.\n");
+        return false;
+    }
+    novo->reg = item;
+    novo->PROX = carrinho->topo;
+    carrinho->topo = novo;
+
+    printf("Item movido para o carrinho: %s\n", item.NOMEPROD);
+    return true;
+}
