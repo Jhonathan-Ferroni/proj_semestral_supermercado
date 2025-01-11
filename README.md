@@ -41,9 +41,9 @@ Este projeto é uma aplicação de gerenciamento de um supermercado utilizando e
 ## Como Executar
 
 1. Clone o repositório:
- git clone https://github.com/seu-usuario/projeto-estrutura.git
+ git clone https://github.com/Jhonathan-Ferroni/proj_semestral_supermercado
 2. Navegue até o diretório do projeto:
- cd projeto-estrutura  
+ cd proj_semestral_supermercado 
 3. Compile o projeto:
  gcc main.c pilhas.c fila.c -o supermercado
 4. Execute o programa:
