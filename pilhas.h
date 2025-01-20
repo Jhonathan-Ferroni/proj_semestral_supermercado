@@ -45,6 +45,7 @@ typedef struct
 
 
 // Declaração das funções
+bool estaVazioCarrinho(CARRINHO* carrinho); 
 int vertamanho(PILHA* p);
 void exibirPilha(PILHA* p);
 bool estaVazia(PILHA* p);

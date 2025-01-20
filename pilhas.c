@@ -18,6 +18,7 @@ void salvarPilhaEmArquivo(PILHA* p, const char* nomeArquivo);
 bool carregarPilhaDeArquivo(PILHA* p, const char* nomeArquivo);
 void exibirRegistros(reg* registros, int n);
 bool moveritemparacarrinho(PILHA* gondola, CARRINHO* carrinho);
+bool estaVazioCarrinho(CARRINHO* carrinho);
 
 
 
@@ -106,12 +107,23 @@ void menupilhas(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usua
                 caixaEletronico(carrinho, gondolas);
                 break;
             case 0:
+				if (estaVazioCarrinho(carrinho)) {
+					printf("Carrinho vazio. Saindo.\n");
+                    opcao = 4;
+					break;
+				}
+				else {
+					printf("Carrinho nao esta vazio. Finalize a compra antes de sair!\n");
+					break;
+
+				}
                 printf("\nSaindo\n");
+                opcao = 4;
                 break;
             default:
                 printf("\nOpcao invalida. Tente novamente.\n");
             }
-        } while (opcao != 0);
+        } while (opcao != 4);
     if (usuario == 'r')
         do {
 			int w = 0;
@@ -201,7 +213,8 @@ void adicionarproduto(PILHA gondolas[]) {
 	scanf("%s", produto.NOMEPROD);
     fflush(stdin);
 	printf("Descricao do produto: ");
-	scanf("%s", produto.desc);
+	fgets(produto.desc, 100, stdin);
+	produto.desc[strcspn(produto.desc, "\n")] = 0;
     fflush(stdin);
 	printf("Peso do produto: ");
 	scanf("%f", &produto.peso);
@@ -370,4 +383,8 @@ bool moveritemparacarrinho(PILHA* gondola, CARRINHO* carrinho)
 
     printf("Item movido para o carrinho: %s\n", item.NOMEPROD);
     return true;
+}
+
+bool estaVazioCarrinho(CARRINHO* carrinho) {
+    return carrinho->topo == NULL;
 }
