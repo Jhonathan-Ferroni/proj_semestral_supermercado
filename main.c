@@ -268,7 +268,6 @@ int main()
     if (n < 0) {
         return 1;
     }
-    exibirRegistros(registros, n);
     bubblesort(registros, n);
     salvadat(Arq, registros, n);
 
