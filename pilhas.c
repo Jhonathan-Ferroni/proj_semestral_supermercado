@@ -100,13 +100,19 @@ void menupilhas(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usua
                 system("cls");
                 break;
             case 2:
+                fflush(stdin);
                 exibirCarrinho(carrinho);
                 getchar();
+                
                 break;
             case 3:
+                fflush(stdin);
                 caixaEletronico(carrinho, gondolas);
+                getchar();
+				
                 break;
             case 0:
+                fflush(stdin);
 				if (estaVazioCarrinho(carrinho)) {
 					printf("Carrinho vazio. Saindo.\n");
                     opcao = 4;
@@ -114,6 +120,8 @@ void menupilhas(PILHA gondolas[], int numGondolas, CARRINHO* carrinho, char usua
 				}
 				else {
 					printf("Carrinho nao esta vazio. Finalize a compra antes de sair!\n");
+					getchar();
+					
 					break;
 
 				}
